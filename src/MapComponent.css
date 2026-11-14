@@ -1,20 +1,52 @@
-.popup{
+.main {
+    display: flex;
+    height: 100%;
+}
+
+.main .map{
     max-width:300px
 }
 
-.popup h3{
+.main .map h3{
     margin:0 0 8px 0
 }
 
-.popup p{
+.main .map p{
     margin:0 0 4px 0
 }
 
-.popup details summary{
+.main .map details summary{
     cursor:pointer
 }
 
-.popup details p{
+.main .map details p{
     margin:8px 0 0 0; 
     font-Size:0.9em
+}
+
+.main .sidebar {
+    width:300px;
+    padding:15px;
+    background-color:#f4f4f4;
+    border-right:1px solid #ccc;
+    overflow-y:auto;
+    font-family:Arial, sans-serif
+}
+
+.main .sidebar .buttons {
+    margin-bottom: 10px
+}
+
+.main .sidebar .buttons button {
+    margin-right: 5px
+}
+
+.main .sidebar label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.main y.sidebar .numOfEntries {
+    margin-top: 15px;
+    font-size: 0.9em;
 }
