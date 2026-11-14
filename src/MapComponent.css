@@ -1,0 +1,20 @@
+.popup{
+    max-width:300px
+}
+
+.popup h3{
+    margin:0 0 8px 0
+}
+
+.popup p{
+    margin:0 0 4px 0
+}
+
+.popup details summary{
+    cursor:pointer
+}
+
+.popup details p{
+    margin:8px 0 0 0; 
+    font-Size:0.9em
+}
