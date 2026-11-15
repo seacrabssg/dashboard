@@ -12,13 +12,13 @@ const MapComponent = () => {
     const entries = Array.isArray(mapEntries) ? mapEntries : [mapEntries];
     
     // filter dataset by removing incomplete data
-    const themes = [...new Set(entries.filter(e => !e.Longitude || !e.Latitude).map(e => e.Theme).filter(Boolean))];  //
+    const themes = [...new Set(entries.filter(e => e.Longitude && e.Latitude).map(e => e.Theme).filter(Boolean))]; 
     const [selectedThemes, setSelectedThemes] = useState(themes); // state for selected themes (initially all selected)
     const filteredEntries = entries.filter(entry =>
         selectedThemes.includes(entry.Theme) && entry.Latitude && entry.Longitude
     ); // filter entries based on selected themes
 
-    // Toggle themes
+    // toggle themes
     const toggleTheme = (theme) => {
         if (selectedThemes.includes(theme)) { //if already has theme, remove them
             setSelectedThemes(selectedThemes.filter(t => t !== theme));
@@ -27,11 +27,34 @@ const MapComponent = () => {
         }
     };
 
-    // Select all themes
+    //select all themes
     const selectAll = () => setSelectedThemes(themes);
-    // Deselect all
+    //remove all themes
     const deselectAll = () => setSelectedThemes([]);
 
+    //Colours of markers are hardcoded according to their themes
+    const themeColors = { 
+        "Energy Transition": "red",
+        "Land Reclamation": "blue",
+        "Artificial Intelligence and Data Centers": "black",
+        "Agriculture-driven Deforestation": "brown"
+    };
+
+    function createColoredIcon(color) {
+        return L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background-color:${color}; width:18px; height:18px; border-radius:50%; border:2px solid white; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>`,
+            iconAnchor: [9, 9], //middle
+            popupAnchor: [0, -9] //cover the whole button size
+        });
+    }
+
+    const [clickedEntry, setClickedEntry] = useState();
+    function handleClickedEntry(entry) {
+        useEffect(() => {
+            setClickedEntry(entry);
+        }, [setClickedEntry]);
+    }
 
     return (
         <div className='main'>
@@ -41,45 +64,22 @@ const MapComponent = () => {
                     url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
                 />
                 
-                {/* Map through each entry and create a marker */}
+                {/* map through each entry and create a marker */}
                 {filteredEntries.map((entry, index) => {
-                    // Skip entries without valid coordinates
+                    // skip entries without valid coordinates
                     if (!entry.Latitude || !entry.Longitude) return null;
                     
                     return (
                         <Marker 
                             key={entry["Entry ID"] || index}
                             position={[entry.Latitude, entry.Longitude]}
+                            icon={createColoredIcon(themeColors[entry.Theme] || "#888")}
+                            eventHandlers={{
+                                click: () => setClickedEntry(entry),
+                                touchstart: () => setClickedEntry(entry),
+                            }}
                         >
-                            <Popup>
-                                <div className='map'>
-                                    <h3>{entry.Title}</h3>
-                                    <p>
-                                        <strong>Status:</strong> {entry.Status}
-                                    </p>
-                                    <p>
-                                        <strong>Location:</strong> {entry["Name of Location"]}
-                                    </p>
-                                    <p>
-                                        <strong>Country:</strong> {entry["Country (place-based)"]}
-                                    </p>
-                                    <p>
-                                        <strong>Theme:</strong> {entry.Theme}
-                                    </p>
-                                    <p>
-                                        <strong>Type:</strong> {entry["Type of Entry"]}
-                                    </p>
-                                    <p>
-                                        <strong>Affected Population:</strong> {entry["Affected Population"]}
-                                    </p>
-                                    <details>
-                                        <summary>View Summary</summary>
-                                        <p>
-                                            {entry.Summary}
-                                        </p>
-                                    </details>
-                                </div>
-                            </Popup>
+                            
                         </Marker>
                     );
                 })}
@@ -101,11 +101,39 @@ const MapComponent = () => {
                         {theme}
                     </label>
                 ))}
-                <div className='numOfEntries'> {/*/ make sure data has coordinates, or else the num of entries is inaccurate */}
+                <div className='numOfEntries'> 
                     Showing {filteredEntries.length} of {entries.length} entries
                 </div>
-            </div>
-        </div>
+                {!clickedEntry ? <p>Please click on an item.</p> 
+                : <div className='map' >
+                    <h3>{clickedEntry.Title}</h3>
+                    <p>
+                        <strong>Status:</strong> {clickedEntry.Status}
+                    </p>
+                    <p>
+                        <strong>Location:</strong> {clickedEntry["Name of Location"]}
+                    </p>
+                    <p>
+                        <strong>Country:</strong> {clickedEntry["Country (place-based)"]}
+                    </p>
+                    <p>
+                        <strong>Theme:</strong> {clickedEntry.Theme}
+                    </p>
+                    <p>
+                        <strong>Type:</strong> {clickedEntry["Type of Entry"]}
+                    </p>
+                    <p>
+                        <strong>Affected Population:</strong> {clickedEntry["Affected Population"]}
+                    </p>
+                    <details>
+                        <summary>View Summary</summary>
+                        <p>
+                            {clickedEntry.Summary}
+                        </p>
+                    </details>
+                </div>}
+            </div> {/* sidebar */}
+        </div> /* main */
         
     );
 };
