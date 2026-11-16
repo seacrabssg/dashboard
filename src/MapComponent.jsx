@@ -67,8 +67,6 @@ const MapComponent = () => {
         }, [setClickedEntry]);
     }
 
-    const [showSidebar, setShowSidebar] = useState(true); //for mobile
-
     return (
         <div className='main'>
             <div className="map-wrapper">
@@ -103,115 +101,106 @@ const MapComponent = () => {
                 </MapContainer>
             </div>
             
-            <button 
-                className="mobile-menu-toggle"
-                onClick={() => setShowSidebar(!showSidebar)}
-            >
-                ☰ Filters & Info
-            </button>
-            
-            {showSidebar && (
-                <div className='sidebar'>
-                    <div className='sidebar-header'>
-                        <h2>🗺️ Map Explorer</h2>
-                        <p className='sidebar-subtitle'>Explore and filter data points</p>
-                    </div>
+            <div className='sidebar'>
+                <div className='sidebar-header'>
+                    <h2>🗺️ Map Explorer</h2>
+                    <p className='sidebar-subtitle'>Explore and filter data points</p>
+                </div>
 
-                    <div className='filter-section'>
-                        <h3>
-                            <span className='filter-icon'>🔍</span> 
-                            Filter by Theme
-                        </h3>
-                        <div className='buttons'>
-                            <button className='btn-select-all' onClick={selectAll}>
-                                ✓ Select All
-                            </button>
-                            <button className='btn-deselect-all' onClick={deselectAll}>
-                                ✕ Deselect All
-                            </button>
+                <div className='filter-section'>
+                    <h3>
+                        <span className='filter-icon'>🔍</span> 
+                        Filter by Theme
+                    </h3>
+                    <div className='buttons'>
+                        <button className='btn-select-all' onClick={selectAll}>
+                            ✓ Select All
+                        </button>
+                        <button className='btn-deselect-all' onClick={deselectAll}>
+                            ✕ Deselect All
+                        </button>
+                    </div>
+                    <div className='checkbox-group'>
+                        {themes.map(theme => (
+                            <label key={theme} className='checkbox-label'>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedThemes.includes(theme)}
+                                    onChange={() => toggleTheme(theme)}
+                                    className='checkbox-input'
+                                />
+                                <span className='checkbox-custom'>
+                                    <span 
+                                        className='color-dot' 
+                                        style={{backgroundColor: themeColors[theme] || "#888"}}
+                                    ></span>
+                                    {theme}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
+                <div className='entry-count'>
+                    <div className='count-bar'>
+                        <div 
+                            className='count-fill' 
+                            style={{width: `${(filteredEntries.length / entries.length) * 100}%`}}
+                        ></div>
+                    </div>
+                    <p className='count-text'>
+                        Showing <strong>{filteredEntries.length}</strong> of <strong>{entries.length}</strong> entries
+                    </p>
+                </div>
+
+                <div className='entry-details'>
+                    {!clickedEntry ? (
+                        <div className='no-selection'>
+                            <div className='placeholder-icon'>👆</div>
+                            <p>Click on a marker to view details</p>
                         </div>
-                        <div className='checkbox-group'>
-                            {themes.map(theme => (
-                                <label key={theme} className='checkbox-label'>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedThemes.includes(theme)}
-                                        onChange={() => toggleTheme(theme)}
-                                        className='checkbox-input'
-                                    />
-                                    <span className='checkbox-custom'>
-                                        <span 
-                                            className='color-dot' 
-                                            style={{backgroundColor: themeColors[theme] || "#888"}}
-                                        ></span>
-                                        {theme}
+                    ) : (
+                        <div className='entry-card'>
+                            <div className='entry-header'>
+                                <div className='entry-theme-badge'>
+                                    {clickedEntry.Theme}
+                                </div>
+                                <h3>{clickedEntry.Title}</h3>
+                            </div>
+                            <div className='entry-info'>
+                                <div className='info-row'>
+                                    <span className='info-label'>Status</span>
+                                    <span className='info-value status-badge'>
+                                        {clickedEntry.Status}
                                     </span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className='entry-count'>
-                        <div className='count-bar'>
-                            <div 
-                                className='count-fill' 
-                                style={{width: `${(filteredEntries.length / entries.length) * 100}%`}}
-                            ></div>
-                        </div>
-                        <p className='count-text'>
-                            Showing <strong>{filteredEntries.length}</strong> of <strong>{entries.length}</strong> entries
-                        </p>
-                    </div>
-
-                    <div className='entry-details'>
-                        {!clickedEntry ? (
-                            <div className='no-selection'>
-                                <div className='placeholder-icon'>👆</div>
-                                <p>Click on a marker to view details</p>
-                            </div>
-                        ) : (
-                            <div className='entry-card'>
-                                <div className='entry-header'>
-                                    <div className='entry-theme-badge'>
-                                        {clickedEntry.Theme}
-                                    </div>
-                                    <h3>{clickedEntry.Title}</h3>
                                 </div>
-                                <div className='entry-info'>
-                                    <div className='info-row'>
-                                        <span className='info-label'>Status</span>
-                                        <span className='info-value status-badge'>
-                                            {clickedEntry.Status}
-                                        </span>
-                                    </div>
-                                    <div className='info-row'>
-                                        <span className='info-label'>Location</span>
-                                        <span className='info-value'>{clickedEntry["Name of Location"]}</span>
-                                    </div>
-                                    <div className='info-row'>
-                                        <span className='info-label'>Country</span>
-                                        <span className='info-value'>{clickedEntry["Country (place-based)"]}</span>
-                                    </div>
-                                    <div className='info-row'>
-                                        <span className='info-label'>Type</span>
-                                        <span className='info-value'>{clickedEntry["Type of Entry"]}</span>
-                                    </div>
-                                    <div className='info-row'>
-                                        <span className='info-label'>Population</span>
-                                        <span className='info-value'>{clickedEntry["Affected Population"]}</span>
-                                    </div>
+                                <div className='info-row'>
+                                    <span className='info-label'>Location</span>
+                                    <span className='info-value'>{clickedEntry["Name of Location"]}</span>
                                 </div>
-                                <details className='summary-details'>
-                                    <summary>📄 View Summary</summary>
-                                    <div className='summary-content'>
-                                        {clickedEntry.Summary}
-                                    </div>
-                                </details>
+                                <div className='info-row'>
+                                    <span className='info-label'>Country</span>
+                                    <span className='info-value'>{clickedEntry["Country (place-based)"]}</span>
+                                </div>
+                                <div className='info-row'>
+                                    <span className='info-label'>Type</span>
+                                    <span className='info-value'>{clickedEntry["Type of Entry"]}</span>
+                                </div>
+                                <div className='info-row'>
+                                    <span className='info-label'>Population</span>
+                                    <span className='info-value'>{clickedEntry["Affected Population"]}</span>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                </div> //sidebar
-            )}
+                            <details className='summary-details'>
+                                <summary>📄 View Summary</summary>
+                                <div className='summary-content'>
+                                    {clickedEntry.Summary}
+                                </div>
+                            </details>
+                        </div>
+                    )}
+                </div>
+            </div> {/* sidebar */}
         </div> /* main */
         
     );

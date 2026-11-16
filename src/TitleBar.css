@@ -5,6 +5,8 @@ header{
     background-color:#78290f;
     color: #ffecd1;
     display:block;
+    position: sticky;
+    z-index: 9999;
 }
 
 .header-container{
@@ -22,6 +24,7 @@ header{
     width:40%;
     flex: 0% 15% 50%;
     margin-left:5%;
+    padding-top: 10px;
 }
 .header-nav{
     width: 60%;

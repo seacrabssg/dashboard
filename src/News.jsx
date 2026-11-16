@@ -44,7 +44,7 @@ const NewsItem = ({title, newsDate, tags, source, source_link, blurb}) => {
 const News = () => {
     return (
         <div className="news-container">
-            <h1>Latest News</h1>
+            <h1>Latest News (To Be Updated)</h1>
             {
                 newsJSON.map((entry, index) => (
                     <NewsItem 
