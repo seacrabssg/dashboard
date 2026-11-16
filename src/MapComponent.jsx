@@ -40,14 +40,25 @@ const MapComponent = () => {
         "Agriculture-driven Deforestation": "brown"
     };
 
-    function createColoredIcon(color) {
-        return L.divIcon({
-            className: 'custom-marker',
-            html: `<div style="background-color:${color}; width:18px; height:18px; border-radius:50%; border:2px solid white; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>`,
-            iconAnchor: [9, 9], //middle
-            popupAnchor: [0, -9] //cover the whole button size
-        });
-    }
+    function createColoredIcon(color, isSelected = false) {
+    const size = isSelected ? 24 : 18;
+    
+    return L.divIcon({
+        className: `custom-marker ${isSelected ? 'selected-marker' : ''}`,
+        html: `<div style="
+            background-color:${color}; 
+            width:${size}px; 
+            height:${size}px; 
+            border-radius:50%; 
+            border:2px solid white; 
+            transition: all 0.3s ease;
+            ${isSelected ? 'transform: scale(1.001);' : ''}
+            ${isSelected ? '' : 'opacity: 60%'}
+        "></div>`,
+        iconAnchor: [size/2, size/2],
+        popupAnchor: [0, -size/2]
+    });
+}
 
     const [clickedEntry, setClickedEntry] = useState();
     function handleClickedEntry(entry) {
@@ -56,83 +67,151 @@ const MapComponent = () => {
         }, [setClickedEntry]);
     }
 
+    const [showSidebar, setShowSidebar] = useState(true); //for mobile
+
     return (
         <div className='main'>
-            <MapContainer center={position} zoom={zoom} scrollWheelZoom={true}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-                />
-                
-                {/* map through each entry and create a marker */}
-                {filteredEntries.map((entry, index) => {
-                    // skip entries without valid coordinates
-                    if (!entry.Latitude || !entry.Longitude) return null;
+            <div className="map-wrapper">
+                <MapContainer center={position} zoom={zoom} scrollWheelZoom={true}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+                    />
                     
-                    return (
-                        <Marker 
-                            key={entry["Entry ID"] || index}
-                            position={[entry.Latitude, entry.Longitude]}
-                            icon={createColoredIcon(themeColors[entry.Theme] || "#888")}
-                            eventHandlers={{
-                                click: () => setClickedEntry(entry),
-                                touchstart: () => setClickedEntry(entry),
-                            }}
-                        >
-                            
-                        </Marker>
-                    );
-                })}
-            </MapContainer>
+                    {/* map through each entry and create a marker */}
+                    {filteredEntries.map((entry, index) => {
+                        // skip entries without valid coordinates
+                        if (!entry.Latitude || !entry.Longitude) return null;
 
-            <div className='sidebar'>
-                <h3>Filter by Theme</h3>
-                <div className='buttons'>
-                    <button onClick={selectAll}>Select All</button>
-                    <button onClick={deselectAll}>Deselect All</button>
-                </div>
-                {themes.map(theme => (
-                    <label key={theme}>
-                        <input
-                            type="checkbox"
-                            checked={selectedThemes.includes(theme)}
-                            onChange={() => toggleTheme(theme)}
-                        />
-                        {theme}
-                    </label>
-                ))}
-                <div className='numOfEntries'> 
-                    Showing {filteredEntries.length} of {entries.length} entries
-                </div>
-                {!clickedEntry ? <p>Please click on an item.</p> 
-                : <div className='map' >
-                    <h3>{clickedEntry.Title}</h3>
-                    <p>
-                        <strong>Status:</strong> {clickedEntry.Status}
-                    </p>
-                    <p>
-                        <strong>Location:</strong> {clickedEntry["Name of Location"]}
-                    </p>
-                    <p>
-                        <strong>Country:</strong> {clickedEntry["Country (place-based)"]}
-                    </p>
-                    <p>
-                        <strong>Theme:</strong> {clickedEntry.Theme}
-                    </p>
-                    <p>
-                        <strong>Type:</strong> {clickedEntry["Type of Entry"]}
-                    </p>
-                    <p>
-                        <strong>Affected Population:</strong> {clickedEntry["Affected Population"]}
-                    </p>
-                    <details>
-                        <summary>View Summary</summary>
-                        <p>
-                            {clickedEntry.Summary}
+                        // Check if this entry is currently selected
+                        const isSelected = clickedEntry && clickedEntry["Entry ID"] === entry["Entry ID"];
+                        
+                        return (
+                            <Marker 
+                                key={entry["Entry ID"] || index}
+                                position={[entry.Latitude, entry.Longitude]}
+                                icon={createColoredIcon(themeColors[entry.Theme] || "#888",  isSelected)}
+                                eventHandlers={{
+                                    click: () => setClickedEntry(entry),
+                                    touchstart: () => setClickedEntry(entry),
+                                }}
+                            >
+                                
+                            </Marker>
+                        );
+                    })}
+                </MapContainer>
+            </div>
+            
+            <button 
+                className="mobile-menu-toggle"
+                onClick={() => setShowSidebar(!showSidebar)}
+            >
+                ☰ Filters & Info
+            </button>
+            
+            {showSidebar && (
+                <div className='sidebar'>
+                    <div className='sidebar-header'>
+                        <h2>🗺️ Map Explorer</h2>
+                        <p className='sidebar-subtitle'>Explore and filter data points</p>
+                    </div>
+
+                    <div className='filter-section'>
+                        <h3>
+                            <span className='filter-icon'>🔍</span> 
+                            Filter by Theme
+                        </h3>
+                        <div className='buttons'>
+                            <button className='btn-select-all' onClick={selectAll}>
+                                ✓ Select All
+                            </button>
+                            <button className='btn-deselect-all' onClick={deselectAll}>
+                                ✕ Deselect All
+                            </button>
+                        </div>
+                        <div className='checkbox-group'>
+                            {themes.map(theme => (
+                                <label key={theme} className='checkbox-label'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedThemes.includes(theme)}
+                                        onChange={() => toggleTheme(theme)}
+                                        className='checkbox-input'
+                                    />
+                                    <span className='checkbox-custom'>
+                                        <span 
+                                            className='color-dot' 
+                                            style={{backgroundColor: themeColors[theme] || "#888"}}
+                                        ></span>
+                                        {theme}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className='entry-count'>
+                        <div className='count-bar'>
+                            <div 
+                                className='count-fill' 
+                                style={{width: `${(filteredEntries.length / entries.length) * 100}%`}}
+                            ></div>
+                        </div>
+                        <p className='count-text'>
+                            Showing <strong>{filteredEntries.length}</strong> of <strong>{entries.length}</strong> entries
                         </p>
-                    </details>
-                </div>}
-            </div> {/* sidebar */}
+                    </div>
+
+                    <div className='entry-details'>
+                        {!clickedEntry ? (
+                            <div className='no-selection'>
+                                <div className='placeholder-icon'>👆</div>
+                                <p>Click on a marker to view details</p>
+                            </div>
+                        ) : (
+                            <div className='entry-card'>
+                                <div className='entry-header'>
+                                    <div className='entry-theme-badge'>
+                                        {clickedEntry.Theme}
+                                    </div>
+                                    <h3>{clickedEntry.Title}</h3>
+                                </div>
+                                <div className='entry-info'>
+                                    <div className='info-row'>
+                                        <span className='info-label'>Status</span>
+                                        <span className='info-value status-badge'>
+                                            {clickedEntry.Status}
+                                        </span>
+                                    </div>
+                                    <div className='info-row'>
+                                        <span className='info-label'>Location</span>
+                                        <span className='info-value'>{clickedEntry["Name of Location"]}</span>
+                                    </div>
+                                    <div className='info-row'>
+                                        <span className='info-label'>Country</span>
+                                        <span className='info-value'>{clickedEntry["Country (place-based)"]}</span>
+                                    </div>
+                                    <div className='info-row'>
+                                        <span className='info-label'>Type</span>
+                                        <span className='info-value'>{clickedEntry["Type of Entry"]}</span>
+                                    </div>
+                                    <div className='info-row'>
+                                        <span className='info-label'>Population</span>
+                                        <span className='info-value'>{clickedEntry["Affected Population"]}</span>
+                                    </div>
+                                </div>
+                                <details className='summary-details'>
+                                    <summary>📄 View Summary</summary>
+                                    <div className='summary-content'>
+                                        {clickedEntry.Summary}
+                                    </div>
+                                </details>
+                            </div>
+                        )}
+                    </div>
+                </div> //sidebar
+            )}
         </div> /* main */
         
     );

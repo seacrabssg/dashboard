@@ -5,7 +5,7 @@ const TitleBar = ({ onNavClick }) => {
     return (
         <header>
             <div className="header-container">
-                <div id = "title">CRABs</div>
+                <div id = "title">CRAB</div>
                 <nav className="header-nav" aria-label="Main Navigation">
                     <ul className="nav-list">
                         <li className="nav-item"><a href="#about" class="nav-link">About</a></li>

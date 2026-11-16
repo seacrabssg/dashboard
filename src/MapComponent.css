@@ -1,52 +1,437 @@
 .main {
     display: flex;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.map-wrapper {
+    flex: 1;
     height: 100%;
 }
 
-.main .map{
-    max-width:300px
-}
-
-.main .map h3{
-    margin:0 0 8px 0
-}
-
-.main .map p{
-    margin:0 0 4px 0
-}
-
-.main .map details summary{
-    cursor:pointer
-}
-
-.main .map details p{
-    margin:8px 0 0 0; 
-    font-Size:0.9em
-}
-
 .main .sidebar {
-    width:300px;
-    padding:15px;
-    background-color:#f4f4f4;
-    border-right:1px solid #ccc;
-    overflow-y:auto;
-    font-family:Arial, sans-serif
+    width: 320px;
+    min-width: 320px;
+    height: 100vh;
+    overflow-y: auto; 
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
 }
 
-.main .sidebar .buttons {
-    margin-bottom: 10px
+/* Map Container takes remaining space */
+.main .leaflet-container {
+    flex: 1;
+    height: 100vh;
 }
 
-.main .sidebar .buttons button {
-    margin-right: 5px
+/* Sidebar Header */
+.sidebar-header {
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e8ecef;
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
-.main .sidebar label {
-    display: block;
-    margin-bottom: 5px;
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+    color: #2c3e50;
+    font-weight: 700;
 }
 
-.main y.sidebar .numOfEntries {
-    margin-top: 15px;
+.sidebar-subtitle {
+    margin: 5px 0 0 0;
+    color: #6c757d;
     font-size: 0.9em;
+}
+
+/* Filter Section */
+.filter-section {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+}
+
+.filter-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 1em;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-icon {
+    font-size: 1.2em;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.btn-select-all,
+.btn-deselect-all {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-select-all {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.btn-select-all:hover {
+    background: #c8e6c9;
+    transform: translateY(-1px);
+}
+
+.btn-deselect-all {
+    background: #fce4ec;
+    color: #c62828;
+}
+
+.btn-deselect-all:hover {
+    background: #f8bbd0;
+    transform: translateY(-1px);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: #f0f0f0;
+}
+
+.checkbox-input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #3498db;
+}
+
+.checkbox-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+    font-size: 0.9em;
+    color: #2c3e50;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Entry Count */
+.entry-count {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+}
+
+.count-bar {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.count-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.count-text {
+    margin: 0;
+    font-size: 0.85em;
+    color: #6c757d;
+}
+
+/* Entry Details Section - This will be scrollable */
+.entry-details {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 100px;
+}
+
+/* No Selection Placeholder */
+.no-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 2px dashed #dee2e6;
+    padding: 20px;
+    text-align: center;
+}
+
+.placeholder-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.no-selection p {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin: 0;
+}
+
+/* Entry Card */
+.entry-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.entry-header {
+    margin-bottom: 12px;
+}
+
+.entry-theme-badge {
+    font-size: 0.75em;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.entry-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.entry-info {
+    margin-bottom: 12px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.85em;
+    min-width: 80px;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-size: 0.85em;
+    text-align: right;
+}
+
+.status-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+/* Summary Details */
+.summary-details {
+    margin-top: 12px;
+}
+
+.summary-details summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #495057;
+    padding: 8px 0;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 8px;
+}
+
+.summary-details summary:hover {
+    color: #2c3e50;
+}
+
+.summary-content {
+    margin-top: 8px;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* Custom scrollbar for sidebar */
+.main .sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main .sidebar::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 3px;
+}
+
+.main .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+.mobile-menu-toggle {
+    display: none; /* hidden on desktop */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-size: 1em;
+}
+
+/* Mobile/Tablet custom - to use vertical stacking */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .main {
+        flex-direction: column;
+        height: 100vh; 
+        overflow-y: auto; 
+    }
+
+    .map-wrapper {
+        flex: none;
+        height: 50vh; /* on mobile, 50% of viewport */
+        width: 100%;
+    }
+
+    .main .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto; /* height determined by content */
+        border-right: none;
+        border-top: 1px solid #e0e0e0;
+        padding: 15px;
+    }
+
+    /* Map container becomes a fixed height (e.g., 50vh) */
+    .main .leaflet-container {
+        height: 50vh;
+        width: 100%;
+        flex: none;
+    }
+
+    /* Ensure map tiles fill the container */
+    .leaflet-container .leaflet-map-pane {
+        width: 100%; 
+        height: 100% 
+    }
+
+    /* Increase touch targets */
+    .btn-select-all,
+    .btn-deselect-all {
+        padding: 12px 16px;
+        font-size: 1em;
+    }
+
+    .checkbox-label {
+        padding: 10px 12px;
+    }
+
+    .checkbox-input {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Adjust font sizes for readability */
+    .sidebar-header h2 {
+        font-size: 1.2em;
+    }
+
+    .filter-section h3 {
+        font-size: 1.1em;
+    }
+
+    .entry-card {
+        padding: 12px;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .info-label {
+        min-width: unset;
+        margin-bottom: 2px;
+    }
+
+    .info-value {
+        text-align: left;
+    }
+
+    /* Make the placeholder text more inviting */
+    .no-selection {
+        height: 150px;
+    }
+
+    .placeholder-icon {
+        font-size: 3em;
+    }
 }
