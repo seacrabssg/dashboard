@@ -36,8 +36,8 @@ const MapComponent = () => {
     const themeColors = { 
         "Energy Transition": "red",
         "Land Reclamation": "blue",
-        "Artificial Intelligence and Data Centers": "black",
-        "Agriculture-driven Deforestation": "brown"
+        "Artificial Intelligence and Data Centers": "orange",
+        "Agriculture-driven Deforestation": "green"
     };
 
     function createColoredIcon(color, isSelected = false) {
@@ -152,6 +152,10 @@ const MapComponent = () => {
                         Showing <strong>{filteredEntries.length}</strong> of <strong>{entries.length}</strong> entries
                     </p>
                 </div>
+
+                <div classname='database-link'>
+                    <a target="_blank" href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vRtDWqRU9p2eb7yw63HyAzBxBGZHB8na2Knz0jLoh2CIQDQF7dHy1gl0iYNBxgC_wMPBnY6oNAqmcBq/pubhtml">Link to raw database</a>
+                </div> {/* change to a pic */}
 
                 <div className='entry-details'>
                     {!clickedEntry ? (
