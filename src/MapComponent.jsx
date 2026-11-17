@@ -155,7 +155,7 @@ const MapComponent = () => {
 
                 <div classname='database-link'>
                     <a target="_blank" href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vRtDWqRU9p2eb7yw63HyAzBxBGZHB8na2Knz0jLoh2CIQDQF7dHy1gl0iYNBxgC_wMPBnY6oNAqmcBq/pubhtml">Link to raw database</a>
-                </div> {/* change to a pic */}
+                </div> {/* change to a pic? */}
 
                 <div className='entry-details'>
                     {!clickedEntry ? (

@@ -6,7 +6,7 @@ const About = () => {
             <h1>About Us</h1>
             <div className="text-container">
                 <h4>
-                    We are CRAB (Climate Regionalists Across Borders).
+                    We are CRAB (Climate Regionalists Across Borders), a collective based in South East Asia.
                 </h4>
                 <p>
                     The climate crisis is now, and rather than addressing the capitalist, imperialist system that created it, our governments and institutions are focused on extracting even more short-term profit at the expense of the people and planet.
